@@ -8,25 +8,28 @@ import models
 class BaseModel:
     """Represent BaseModel"""
     def __init__(self, *args, **kwargs):
-        """Initialize the new BaseModel.
-
-        Args:
-            *args(any): any arguments
-            *kwargs(dict): key/value pairs of attributes.
-        """
-        met = "%y-%m-%dT%H:%M:%S.%f"
-        self.id = str(uuid4())
-        self.create_at = datetime.now()
-        self.update_at = datetime.now()
-        if len(kwargs) != 0:
+        """ Construct """
+        if kwargs:
             for key, value in kwargs.items():
-                if key == "create_at" or key == "update_at":
-                    self.__dict__[key] = datetime.strptime(value, met)
-                else
-                    self.__dict__[key] = value
-        else
+                if key == '__class__':
+                    continue
+                elif key == 'updated_at':
+                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+                elif key == 'created_at':
+                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+                if 'id' not in kwargs.keys():
+                    self.id = str(uuid4())
+                if 'created_at' not in kwargs.keys():
+                    self.created_at = datetime.now()
+                if 'updated_at' not in kwargs.keys():
+                    self.updated_at = datetime.now()
+                setattr(self, key, value)
+        else:
+            self.id = str(uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = self.created_at
             models.storage.new(self)
-
+    
     def __str__(self):
         """Represent BaseModel in string"""
         nom = self.__class__.__name__
