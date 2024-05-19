@@ -5,6 +5,14 @@ import sys
 import json
 import os
 from models.base_model import BaseModel
+from models import storage
+from models.base_model import BaseModel
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
@@ -15,6 +23,9 @@ class HBNBCommand(cmd.Cmd):
     """
     prompt = "(hbnb) "
 
+    classes = {'BaseModel': BaseModel, 'User': User, 'City': City,
+               'Place': Place, 'Amenity': Amenity, 'Review': Review,
+               'State': State}
     def emptyline(self, arg):
         """command will do nothing"""
         pass
@@ -53,6 +64,7 @@ class HBNBCommand(cmd.Cmd):
             print("** instance is missing **")
 
     def do_destory(self, arg):
+        """Delete instance with class and id"""
         if len(arg) == 0:
             print("** class name missing **")
             return
@@ -75,6 +87,7 @@ class HBNBCommand(cmd.Cmd):
                 return
 
     def do_all(self, arg):
+        """print all instance"""
         arg = arg.split()
         all_instance = storage.all()
         if len(arg) == 0:
@@ -83,6 +96,35 @@ class HBNBCommand(cmd.Cmd):
             print("**class doesn't exist**")
         else:
             print([str(a) for b, a in all_instance.items() if arg in b])
+
+    def do_update(self, arg):
+        """update JSON file"""
+        arg = arg.split()
+        if len(arg) == 0:
+            print ("** class name missing **")
+            return
+        elif arg[0] not in classes:
+            print("** class doesn't exist **")
+            return
+        elif len(arg) == 1:
+            print("** instance id missing **")
+            return
+        else:
+            k = arg[0] + '.' + arg[1]
+            if k in storage.all():
+                if len(arg) > 2:
+                    if len(arg) == 3:
+                        print("** value missing **")
+                    else:
+                        setattr(
+                            storage.all()[k],
+                            arg[2],
+                            arg[3][1:-1])
+                        storage.all()[k].save()
+                else:
+                    print("** attribute name missing **")
+            else:
+                print("** no instance found **")
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
