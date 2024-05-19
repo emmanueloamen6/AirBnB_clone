@@ -5,7 +5,6 @@ import sys
 import json
 import os
 from models.base_model import BaseModel
-from models import storage
 from models.user import user
 
 
