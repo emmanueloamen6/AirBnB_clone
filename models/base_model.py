@@ -3,20 +3,21 @@
 
 from uuid import uuid4
 from datetime import datetime
-import models
+
 
 class BaseModel:
     """Represent BaseModel"""
     def __init__(self, *args, **kwargs):
         """ Construct """
+        t_now = "%Y-%m-%dT%H:%M:%S.%f"
         if kwargs:
             for key, value in kwargs.items():
                 if key == '__class__':
                     continue
                 elif key == 'updated_at':
-                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+                    value = datetime.strptime(value, t_now)
                 elif key == 'created_at':
-                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+                    value = datetime.strptime(value, t_now)
                 if 'id' not in kwargs.keys():
                     self.id = str(uuid4())
                 if 'created_at' not in kwargs.keys():
@@ -29,14 +30,16 @@ class BaseModel:
             self.created_at = datetime.now()
             self.updated_at = self.created_at
             models.storage.new(self)
-    
+
     def __str__(self):
         """Represent BaseModel in string"""
         nom = self.__class__.__name__
         return ("{} {} {}".format(nom, self.id, self.__dict__))
+
     def save(self):
         self.update_at = datetime.now()
         models.storage.save()
+
     @property
     def __dict__(self):
         tdict = self.__dict__.copy()
