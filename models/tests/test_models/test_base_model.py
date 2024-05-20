@@ -6,55 +6,26 @@ import os
 import unittest
 from models.base_model import BaseModel
 
-
-
 class TestBasemodel(unittest.TestCase):
     """
     Unittest for BaseModel
     """
-
-    def setUp(self):
-        """
-        Setup for temporary file path
-        """
-        try:
-            os.rename("file.json", "tmp.json")
-        except FileNotFoundError:
-            pass
-
-    def tearDown(self):
-        """
-        Tear down for temporary file path
-        """
-        try:
-            os.remove("file.json")
-        except FileNotFoundError:
-            pass
-        try:
-            os.rename("tmp.json", "file.json")
-        except FileNotFoundError:
-            pass
     def test_init(self):
-        """
-        Test for init
-        """
-        my_model = BaseModel()
-
+        """Test init"""
+        my_model = ModelBase()
+        
         self.assertIsNotNone(my_model.id)
-        self.assertIsNotNone(my_model.created_at)
-        self.assertIsNotNone(my_model.updated_at)
+        self.assertIsNotNone(my_model.create_at)
+        self.assertIsNotNone(my_model.update_at)
 
-    def test_save(self):
-        """
-        Test for save method
-        """
+    def test_save(seelf):
+        """Test to save Method"""
         my_model = BaseModel()
 
-        initial_updated_at = my_model.updated_at
+        init_update = my_model.update_at
+        current_update = my_model.save()
 
-        current_updated_at = my_model.save()
-
-        self.assertNotEqual(initial_updated_at, current_updated_at)
+        self.assertNotEqual(init_update, current_update)
 
     def test_to_dict(self):
         """
@@ -86,3 +57,4 @@ class TestBasemodel(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    unittest.main()
