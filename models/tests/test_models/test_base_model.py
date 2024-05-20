@@ -1,37 +1,88 @@
-i#!/usr/bin/python3
-"""Defines unittests for models/base_model.py.
-
-Unittest classes:
-    TestBaseModel_instantiation
-    TestBaseModel_save
-    TestBaseModel_to_dict
+#!/usr/bin/python3
+"""
+Module for BaseModel unittest
 """
 import os
-import models
 import unittest
-from datetime import datetime
-from time import sleep
-from models.basemodel import BaseModel
+from models.base_model import BaseModel
 
-class TestBaseModel_instantiation(unittest.TestCase):
-    """Unittest of BaseModel instantiation of the BaseModel"""
-    def test_args_instantiation(self):
-        self..assertEqual(Basemodel, type(BaseModel()))
 
-    def test_new_instance_stored_in_object(self):
-        self.assertin(BaseModel(), models.storage.all().value())
 
-    def test_id_is_public_str(self):
-        self.assertEqual(str, type(BaseModel().id))
+class TestBasemodel(unittest.TestCase):
+    """
+    Unittest for BaseModel
+    """
 
-    def test_create_at_is_public_datetime(self):
-        self.assertEqual(create_at, type(BaseModel().create_at))
+    def setUp(self):
+        """
+        Setup for temporary file path
+        """
+        try:
+            os.rename("file.json", "tmp.json")
+        except FileNotFoundError:
+            pass
 
-    def test_update_at_is_public_datetime(self):
-        self.assertEqual(update_at, type(BaseModel().update_at))
+    def tearDown(self):
+        """
+        Tear down for temporary file path
+        """
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+        try:
+            os.rename("tmp.json", "file.json")
+        except FileNotFoundError:
+            pass
+    def test_init(self):
+        """
+        Test for init
+        """
+        my_model = BaseModel()
 
-    def test_two_models_unique_ids(self):
-        bm1 = BaseModel()
-        bm2 = BaseModel()
-        self.assertNotEqual(bm1.id, bm2.id)
+        self.assertIsNotNone(my_model.id)
+        self.assertIsNotNone(my_model.created_at)
+        self.assertIsNotNone(my_model.updated_at)
 
+    def test_save(self):
+        """
+        Test for save method
+        """
+        my_model = BaseModel()
+
+        initial_updated_at = my_model.updated_at
+
+        current_updated_at = my_model.save()
+
+        self.assertNotEqual(initial_updated_at, current_updated_at)
+
+    def test_to_dict(self):
+        """
+        Test for to_dict method
+        """
+        my_model = BaseModel()
+
+        my_model_dict = my_model.to_dict()
+
+        self.assertIsInstance(my_model_dict, dict)
+
+        self.assertEqual(my_model_dict["__class__"], 'BaseModel')
+        self.assertEqual(my_model_dict['id'], my_model.id)
+        self.assertEqual(my_model_dict['created_at'], my_model.created_at.isoformat())
+        self.assertEqual(my_model_dict["updated_at"], my_model.created_at.isoformat())
+
+
+    def test_str(self):
+        """
+        Test for string representation
+        """
+        my_model = BaseModel()
+
+        self.assertTrue(str(my_model).startswith('[BaseModel]'))
+
+        self.assertIn(my_model.id, str(my_model))
+
+        self.assertIn(str(my_model.__dict__), str(my_model))
+
+
+if __name__ == "__main__":
