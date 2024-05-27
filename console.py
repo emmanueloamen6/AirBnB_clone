@@ -16,17 +16,17 @@ from models.state import State
 from models.city import City
 
 
-def split_curly_braces(e_arg):
+def parse(e_arg):
     """
     Splits the curly braces for the update method
     """
-    curly_braces = re.search(r"\{(.*?)\}", e_arg)
+    parse = re.search(r"\{(.*?)\}", e_arg)
 
-    if curly_braces:
+    if parse:
         id_with_comma = shlex.split(e_arg[:curly_braces.span()[0]])
         id = [i.strip(",") for i in id_with_comma][0]
 
-        str_data = curly_braces.group(1)
+        str_data = parse.group(1)
         try:
             arg_dict = ast.literal_eval("{" + str_data + "}")
         except Exception:
@@ -57,7 +57,7 @@ class HBNBCommand(cmd.Cmd):
     """
     prompt = "(hbnb) "
     valid_classes = ["BaseModel", "User", "Amenity",
-                     "Place", "Review", "State", "City"]
+                    "Place", "Review", "State", "City"]
 
     def emptyline(self):
         """
@@ -207,11 +207,11 @@ class HBNBCommand(cmd.Cmd):
                 print("** value missing **")
             else:
                 obj = objects[key]
-                curly_braces = re.search(r"\{(.*?)\}", arg)
+                parse = re.search(r"\{(.*?)\}", arg)
 
-                if curly_braces:
+                if parse:
                     try:
-                        str_data = curly_braces.group(1)
+                        str_data = parse.group(1)
 
                         arg_dict = ast.literal_eval("{" + str_data + "}")
 
